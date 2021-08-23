@@ -1,0 +1,33 @@
+#!/bin/bash
+#
+# simple test with ls to check if the shell can find ls in the PATH
+
+command="                  "
+tmp_file="checker_tmp_$RANDOM"
+OUTPUTFILE="checker_output_$RANDOM"
+
+# clean up
+stop_shell
+rm -f $tmp_file
+
+# create a pseudo random file
+touch $tmp_file
+# send commands
+echo "$command" | $SHELL 2> $OUTPUTFILE  &
+echo "$command" | sh 2> $tmp_file &
+
+# wait a little bit
+$SLEEP $SLEEPSECONDS
+
+# check the result
+nmatch=`git diff ${OUTPUTFILE} ${tmp_file} | wc --lines`
+if [ $nmatch -eq 0 ]; then
+	   print_ok
+else
+	   print_ko
+fi
+
+# clean up
+stop_shell
+rm -f $tmp_file
+rm -f $OUTPUTFILE
